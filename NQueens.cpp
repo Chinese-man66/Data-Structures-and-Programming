@@ -3,87 +3,88 @@
 
 using namespace std;
 
-vector<vector<string>> solveNQueens(int n);
-void solveNQueens(vector<vector<string>>& result, vector<string>& board, int row, int N);
-bool isSafe(vector<string>& board, int row, int col, int N);
-void printResult(const vector<vector<string>>& result);
-
-vector<vector<string>> solveNQueens(int n) 
+class NQueensSolver
 {
-    vector<vector<string>> result;
-    vector<string> board(n, string(n, '.')); 
-    solveNQueens(result, board, 0, n);
-
-    return result;
-}
-
-
-void printResult(const vector<vector<string>>& result) 
-{
-    for (const auto& board : result) 
+public:
+    NQueensSolver(int n) : N(n) {}
+    
+    vector<vector<string>> solve() 
     {
-        for (const auto& row : board) 
-            cout << row << endl;
-
-        cout << endl;
-    }
-}
-
-void solveNQueens(vector<vector<string>>& result, vector<string>& board, int row, int N) 
-{
-    if (row == N) {
-        result.push_back(board);
-        return;
+        vector<vector<string>> result;
+        vector<string> board(N, string(N, '.'));
+        solveNQueens(result, board, 0);
+        return result;
     }
 
-    for (int col = 0; col < N; col++) 
+    void printResult(const vector<vector<string>>& result) 
     {
-        if (isSafe(board, row, col, N)) 
+        for (const auto& board : result) 
         {
-            board[row][col] = 'Q'; // 放置皇后
-            solveNQueens(result, board, row + 1, N); // 递归处理下一行
-            board[row][col] = '.'; // 回溯，清除该位置的皇后
+            for (const auto& row : board) 
+                cout << row << endl;
+            cout << endl;
         }
     }
-}
 
+private:
+    int N;
 
-
-bool isSafe(vector<string>& board, int row, int col, int N) 
-{
-    for (int i = 0; i < row; i++) 
+    void solveNQueens(vector<vector<string>>& result, vector<string>& board, int row) 
     {
-        if (board[i][col] == 'Q')
-            return false;
+        if (row == N) {
+            result.push_back(board);
+            return;
+        }
+
+        for (int col = 0; col < N; col++) 
+        {
+            if (isSafe(board, row, col)) 
+            {
+                board[row][col] = 'Q';
+                solveNQueens(result, board, row + 1);
+                board[row][col] = '.';
+            }
+        }
     }
 
-    for (int i = row, j = col; i >= 0 && j >= 0; i--, j--) 
+    bool isSafe(const vector<string>& board, int row, int col) 
     {
-        if (board[i][j] == 'Q')
-            return false;
-    }
+        for (int i = 0; i < row; i++) 
+        {
+            if (board[i][col] == 'Q')
+                return false;
+        }
 
-    for (int i = row, j = col; i >= 0 && j < N; i--, j++) 
-    {
-        if (board[i][j] == 'Q')
-            return false;
-    }
+        for (int i = row, j = col; i >= 0 && j >= 0; i--, j--) 
+        {
+            if (board[i][j] == 'Q')
+                return false;
+        }
 
-    return true;
-}
+        for (int i = row, j = col; i >= 0 && j < N; i--, j++) 
+        {
+            if (board[i][j] == 'Q')
+                return false;
+        }
+
+        return true;
+    }
+};
 
 int main() {
     int n;
+    cout << "申顺琦2125120058 " << endl;
     cout << "请输入皇后的数量：";
     cin >> n;
     if(n <= 3 && n != 1)
     {
-        cout << "无法解决"<< n << "皇后问题" << endl;
+        cout << "无法解决 " << n << " 皇后问题" << endl;
         return 0;
     }
-        
-    vector<vector<string>> result = solveNQueens(n);
+    
+    NQueensSolver solver(n);
+    vector<vector<string>> result = solver.solve();
     cout << "N皇后的所有解:" << endl;
-    printResult(result);
+    solver.printResult(result);
     return 0;
 }
